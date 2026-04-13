@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FairShare — Split expenses, not friendships</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── EXACT TOKENS FROM THE APP ── */
+    :root {
+      --bg:       #0a0a0f;
+      --surface:  #13131c;
+      --surface2: #1c1c2a;
+      --border:   rgba(255,255,255,0.07);
+      --accent:   #c8f564;
+      --text:     #f0f0f8;
+      --muted:    rgba(240,240,248,0.45);
+      --danger:   #ff5f5f;
+      --safe:     #5fff9d;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+      --radius:    16px;
+      --radius-sm: 10px;
+      --ease: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-badge {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: rgba(200,245,100,0.12);
+      color: var(--accent);
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(200,245,100,0.25);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 40px 80px;
+      gap: 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+
+    .hero-left {
+      flex: 1;
+      min-width: 300px;
+      max-width: 540px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s ease forwards;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(42px, 6vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s ease forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 36px;
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s ease forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s ease forwards;
+    }
+
+    /* ── BUTTONS — exactly from app ── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #0a0a0f;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 15px 28px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(200,245,100,0.2);
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(200,245,100,0.3);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 400;
+      padding: 14px 28px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--ease), border-color var(--ease), transform var(--ease);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    /* ── PHONE MOCKUP ── */
+    .hero-right {
+      flex-shrink: 0;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.55s ease forwards;
+    }
+
+    .phone-wrap {
+      position: relative;
+    }
+
+    .phone-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200,245,100,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .phone {
+      width: 252px;
+      background: #080810;
+      border-radius: 44px;
+      padding: 12px;
+      box-shadow:
+        0 60px 120px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.08),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+      position: relative;
+    }
+
+    .phone-island {
+      width: 88px;
+      height: 26px;
+      background: #080810;
+      border-radius: 0 0 18px 18px;
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    .phone-screen {
+      background: var(--bg);
+      border-radius: 34px;
+      overflow: hidden;
+      aspect-ratio: 9/19.5;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* status bar */
+    .ps-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px 6px;
+      font-size: 9px;
+      color: var(--muted);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    /* topbar — matches app */
+    .ps-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px 12px;
+      flex-shrink: 0;
+    }
+
+    .ps-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: -0.3px;
+      color: var(--text);
+    }
+
+    .ps-subtitle {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .ps-icon-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ps-icon-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    /* scroll area */
+    .ps-scroll {
+      flex: 1;
+      overflow: hidden;
+      padding: 0 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* summary bar — 3 cells */
+    .ps-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
+    }
+
+    .ps-sum-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 6px;
+      text-align: center;
+    }
+
+    .ps-sum-label {
+      font-size: 6.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+
+    .ps-sum-val {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* section header */
+    .ps-sh {
+      font-size: 7.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* balances */
+    .ps-balances {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 8px;
+    }
+
+    .ps-bal-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ps-bal-row:last-child { border-bottom: none; }
+
+    .ps-av {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7px;
+      font-weight: 600;
+      flex-shrink: 0;
+      border: 1px solid;
+    }
+
+    .ps-bal-name { flex: 1; font-size: 8px; color: var(--text); }
+    .ps-bal-amt  { font-size: 8.5px; font-weight: 600; }
+    .pos { color: var(--safe); }
+    .neg { color: var(--danger); }
+    .neu { color: var(--muted); }
+
+    /* expenses */
+    .ps-expenses {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 8px;
+    }
+
+    .ps-exp-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ps-exp-row:last-child { border-bottom: none; }
+
+    .ps-exp-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .ps-exp-desc  { font-size: 8px; font-weight: 500; color: var(--text); }
+    .ps-exp-sub   { font-size: 7px; color: var(--muted); margin-top: 1px; }
+    .ps-exp-amt   { font-size: 9px; font-weight: 600; margin-left: auto; flex-shrink: 0; }
+
+    /* FAB */
+    .ps-fab {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a0a0f;
+      font-size: 20px;
+      font-weight: 300;
+      margin: 4px 10px 4px auto;
+      box-shadow: 0 4px 16px rgba(200,245,100,0.35);
+      flex-shrink: 0;
+    }
+
+    /* ── SECTIONS ── */
+    .section-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 100px 40px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+
+    .section-sub {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-weight: 300;
+      max-width: 480px;
+      margin-bottom: 52px;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .step {
+      background: var(--surface2);
+      padding: 28px 24px;
+      position: relative;
+      transition: background var(--ease);
+    }
+
+    .step:hover { background: #20202e; }
+
+    .step-num {
+      font-family: var(--font-display);
+      font-size: 40px;
+      color: rgba(200,245,100,0.15);
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .step h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .step p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 28px 24px;
+      transition: background var(--ease);
+    }
+
+    .feature-card:hover { background: var(--surface2); }
+
+    .feature-icon { font-size: 26px; margin-bottom: 14px; }
+
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+    }
+
+    /* ── TRIP CARD DEMO ── */
+    .trip-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--ease);
+    }
+
+    .trip-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(200,245,100,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .trip-card:hover { transform: translateY(-2px); }
+
+    .trip-card-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .trip-card-meta { font-size: 12px; color: var(--muted); }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: middle;
+      box-shadow: 0 0 0 2px rgba(200,245,100,0.2);
+    }
+
+    .bal { font-weight: 600; font-variant-numeric: tabular-nums; }
+    .bal.pos { color: var(--safe); }
+    .bal.neg { color: var(--danger); }
+    .bal.zero { color: var(--muted); }
+
+    .trip-card-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    .trip-card-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    /* trips preview grid */
+    .trips-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 0;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+
+    .platform-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .pbtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 28px;
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: transform var(--ease), box-shadow var(--ease);
+    }
+
+    .pbtn:hover { transform: translateY(-2px); }
+
+    .pbtn-android {
+      background: var(--accent);
+      color: #0a0a0f;
+      box-shadow: 0 4px 20px rgba(200,245,100,0.2);
+    }
+
+    .pbtn-android:hover { box-shadow: 0 8px 32px rgba(200,245,100,0.3); }
+
+    .pbtn-ios {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .pbtn-ios:hover { background: var(--surface2); }
+
+    .pbtn svg { width: 20px; height: 20px; }
+
+    .cta-note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    footer p { font-size: 12px; color: var(--muted); }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s;
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      padding: 0 24px 40px;
+      max-height: 85vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .modal-backdrop.open .modal-sheet { transform: translateY(0); }
+    .modal-sheet::-webkit-scrollbar { display: none; }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 14px auto 22px;
+    }
+
+    .sheet-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+
+    .sheet-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-weight: 300;
+      margin-bottom: 24px;
+    }
+
+    /* platform tabs — like pills from app */
+    .modal-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .modal-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--ease);
+      text-align: center;
+    }
+
+    .modal-tab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #0a0a0f;
+      font-weight: 600;
+    }
+
+    .info-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+
+    .info-box strong { color: var(--text); display: block; margin-bottom: 4px; font-weight: 500; }
+
+    .modal .btn-primary {
+      width: 100%;
+      justify-content: center;
+      font-size: 15px;
+      padding: 16px;
+      border-radius: var(--radius);
+    }
+
+    .modal-fine {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* ── DIVIDER LINE ── */
+    .divider { height: 1px; background: var(--border); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      nav { padding: 14px 20px; }
+      .hero { padding: 100px 24px 60px; gap: 48px; justify-content: center; text-align: center; }
+      .hero-left { max-width: 100%; }
+      .hero-actions { justify-content: center; }
+      .section-wrap { padding: 72px 24px; }
+      footer { padding: 20px 24px; flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-right { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">FairShare</a>
+  <span class="nav-badge">Beta Testing</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">No servers · No subscription · Your data</p>
+    <h1>Split expenses,<br/><em>not friendships.</em></h1>
+    <p class="hero-sub">
+      FairShare tracks who paid what, splits everything fairly, and settles up with the fewest possible transfers — all stored in your own Google Sheet.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openModal()">
+        🧪 Request Beta Access
+      </button>
+      <a class="btn-secondary" href="#how">How it works ↓</a>
+    </div>
+  </div>
+
+  <!-- PHONE — exact app UI replica -->
+  <div class="hero-right">
+    <div class="phone-wrap">
+      <div class="phone-glow"></div>
+      <div class="phone">
+        <div class="phone-island"></div>
+        <div class="phone-screen">
+
+          <!-- status bar -->
+          <div class="ps-status">
+            <span>9:41</span>
+            <span>●●● 100%</span>
+          </div>
+
+          <!-- topbar -->
+          <div class="ps-topbar">
+            <div>
+              <div class="ps-title">🌴 Bali Trip</div>
+              <div class="ps-subtitle">5 expenses · USD</div>
+            </div>
+            <div class="ps-icon-row">
+              <div class="ps-icon-btn">↑</div>
+              <div class="ps-icon-btn">👥</div>
+              <div class="ps-icon-btn">$</div>
+            </div>
+          </div>
+
+          <!-- scroll area -->
+          <div class="ps-scroll">
+
+            <!-- summary 3-col -->
+            <div class="ps-summary">
+              <div class="ps-sum-cell">
+                <div class="ps-sum-label">Total</div>
+                <div class="ps-sum-val">$1,435</div>
+              </div>
+              <div class="ps-sum-cell">
+                <div class="ps-sum-label">Your share</div>
+                <div class="ps-sum-val">$358</div>
+              </div>
+              <div class="ps-sum-cell">
+                <div class="ps-sum-label">Owed to you</div>
+                <div class="ps-sum-val" style="color:var(--safe)">$167</div>
+              </div>
+            </div>
+
+            <!-- sheet banner -->
+            <div style="background:linear-gradient(135deg,rgba(71,207,76,0.07),rgba(123,97,255,0.07));border:1px solid rgba(71,207,76,0.15);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:7px">
+              <span style="font-size:13px">📊</span>
+              <div>
+                <div style="font-size:8px;color:var(--text)">Synced to Google Sheets</div>
+                <div style="font-size:7px;color:var(--accent)">Open spreadsheet →</div>
+              </div>
+            </div>
+
+            <!-- balances -->
+            <div class="ps-sh">Balances</div>
+            <div class="ps-balances">
+              <div class="ps-bal-row">
+                <div class="ps-av" style="color:#c8f564;border-color:rgba(200,245,100,0.2);background:rgba(200,245,100,0.1)">YO</div>
+                <div class="ps-bal-name">You (you)</div>
+                <div class="ps-bal-amt pos">+$167</div>
+              </div>
+              <div class="ps-bal-row">
+                <div class="ps-av" style="color:#ff5f5f;border-color:rgba(255,95,95,0.2);background:rgba(255,95,95,0.1)">AL</div>
+                <div class="ps-bal-name">Alice</div>
+                <div class="ps-bal-amt neg">−$83</div>
+              </div>
+              <div class="ps-bal-row">
+                <div class="ps-av" style="color:#7b61ff;border-color:rgba(123,97,255,0.2);background:rgba(123,97,255,0.1)">BO</div>
+                <div class="ps-bal-name">Bob</div>
+                <div class="ps-bal-amt neg">−$48</div>
+              </div>
+              <div class="ps-bal-row">
+                <div class="ps-av" style="color:#5fff9d;border-color:rgba(95,255,157,0.2);background:rgba(95,255,157,0.1)">CL</div>
+                <div class="ps-bal-name">Clara</div>
+                <div class="ps-bal-amt neu">$0</div>
+              </div>
+            </div>
+
+            <!-- expenses -->
+            <div class="ps-sh">Expenses (5)</div>
+            <div class="ps-expenses">
+              <div class="ps-exp-row">
+                <div class="ps-exp-icon">🏨</div>
+                <div style="flex:1;min-width:0">
+                  <div class="ps-exp-desc">Airbnb 5 nights</div>
+                  <div class="ps-exp-sub">You · 4p</div>
+                </div>
+                <div class="ps-exp-amt">$820</div>
+              </div>
+              <div class="ps-exp-row">
+                <div class="ps-exp-icon">🚗</div>
+                <div style="flex:1;min-width:0">
+                  <div class="ps-exp-desc">Scooter rental</div>
+                  <div class="ps-exp-sub">Alice · 4p</div>
+                </div>
+                <div class="ps-exp-amt">$160</div>
+              </div>
+              <div class="ps-exp-row">
+                <div class="ps-exp-icon">🎿</div>
+                <div style="flex:1;min-width:0">
+                  <div class="ps-exp-desc">Surf lesson</div>
+                  <div class="ps-exp-sub">Bob · 3p</div>
+                </div>
+                <div class="ps-exp-amt">$240</div>
+              </div>
+              <div class="ps-exp-row">
+                <div class="ps-exp-icon">🍽️</div>
+                <div style="flex:1;min-width:0">
+                  <div class="ps-exp-desc">Dinner Seminyak</div>
+                  <div class="ps-exp-sub">You · 4p</div>
+                </div>
+                <div class="ps-exp-amt">$95</div>
+              </div>
+            </div>
+
+          </div><!-- /scroll -->
+
+          <!-- FAB -->
+          <div class="ps-fab">+</div>
+
+        </div><!-- /screen -->
+      </div><!-- /phone -->
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-wrap">
+    <span class="section-label reveal">How it works</span>
+    <h2 class="section-title reveal">Simple by design,<br/>powerful under the hood.</h2>
+    <p class="section-sub reveal">No account beyond Google. No monthly fee. Your data lives in a real Google Sheet you own — forever.</p>
+
+    <div class="steps reveal">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Sign in with Google</h3>
+        <p>One tap and FairShare creates a Google Sheet in your Drive for each trip. You own the data.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Log expenses on the go</h3>
+        <p>Add who paid, who's splitting, and how much. Works fully offline — syncs when back online.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Balances update instantly</h3>
+        <p>All calculations happen on-device. No server round trips, no loading spinners.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Settle with fewer transfers</h3>
+        <p>FairShare's algorithm minimises the total number of payments to settle everyone up cleanly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TRIP CARDS PREVIEW -->
+<section>
+  <div class="section-wrap" style="padding-bottom: 60px;">
+    <span class="section-label reveal">The app</span>
+    <h2 class="section-title reveal">Your trips, at a glance.</h2>
+    <p class="section-sub reveal">Every trip shows your balance, total spent, and sync status — exactly as it looks on your phone.</p>
+
+    <div class="trips-preview reveal">
+      <div class="trip-card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:30px">🌴</span>
+          <div style="text-align:right">
+            <div class="bal pos">+$167.00</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">you are owed</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="trip-card-name">Bali Trip 2025</div>
+          <div class="trip-card-meta"><span class="status-dot"></span>4 people · 5 expenses · 🔗</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <div style="font-size:12px;color:var(--muted)">Total spent</div>
+          <div style="font-weight:600;font-variant-numeric:tabular-nums">$1,435.00</div>
+        </div>
+        <div class="trip-card-bar"><div class="trip-card-fill" style="width:50%"></div></div>
+      </div>
+
+      <div class="trip-card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:30px">✈️</span>
+          <div style="text-align:right">
+            <div class="bal neg">−€85.00</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">you owe</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="trip-card-name">Paris Weekend</div>
+          <div class="trip-card-meta"><span class="status-dot"></span>2 people · 2 expenses · 🔗</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <div style="font-size:12px;color:var(--muted)">Total spent</div>
+          <div style="font-weight:600;font-variant-numeric:tabular-nums">€428.00</div>
+        </div>
+        <div class="trip-card-bar"><div class="trip-card-fill" style="width:20%"></div></div>
+      </div>
+
+      <div class="trip-card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:30px">🏕️</span>
+          <div style="text-align:right">
+            <div class="bal zero">$0.00</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">settled up</div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="trip-card-name">Camping Trip</div>
+          <div class="trip-card-meta"><span class="status-dot"></span>3 people · 6 expenses · 🔗</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <div style="font-size:12px;color:var(--muted)">Total spent</div>
+          <div style="font-weight:600;font-variant-numeric:tabular-nums">$312.00</div>
+        </div>
+        <div class="trip-card-bar"><div class="trip-card-fill" style="width:60%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section>
+  <div class="section-wrap">
+    <span class="section-label reveal">Why FairShare</span>
+    <h2 class="section-title reveal">Built different.</h2>
+    <p class="section-sub reveal">Most apps own your data and charge you for it. FairShare doesn't.</p>
+
+    <div class="features-grid reveal">
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Zero server dependency</h3>
+        <p>Your data never touches a FairShare server. Google Sheets is the only backend — and it's yours, always.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📶</div>
+        <h3>Offline-first</h3>
+        <p>Add expenses without internet. A sync queue holds changes locally and pushes them when you reconnect.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚖️</div>
+        <h3>Minimum transactions</h3>
+        <p>Smart settlement algorithm that reduces the number of payments everyone has to make to zero out.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Native iOS & Android</h3>
+        <p>Built with Capacitor — a real native app, not a web wrapper. Proper safe areas, native auth, KeyStore.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💱</div>
+        <h3>Multi-currency</h3>
+        <p>Travelling across borders? Log expenses in any currency per trip. USD, EUR, INR, JPY and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🆓</div>
+        <h3>Free. Forever.</h3>
+        <p>No subscription. No ads. No upsell. FairShare is a personal project built to be genuinely useful.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-wrap" style="text-align:center">
+    <span class="section-label reveal" style="display:block">Beta Testing</span>
+    <h2 class="section-title reveal">Want to try it early?</h2>
+    <p class="section-sub reveal" style="margin:0 auto 40px;text-align:center">
+      FairShare is in private beta. Request access and you'll get a personal reply with install instructions within a day or two.
+    </p>
+
+    <div class="platform-btns reveal">
+      <button class="pbtn pbtn-android" onclick="openModal('android')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 15.64a2.18 2.18 0 0 1-2.18-2.18C4 12.29 4.98 11.32 6.18 11.32a2.18 2.18 0 0 1 2.18 2.18c0 1.19-.97 2.14-2.18 2.14m11.64 0a2.18 2.18 0 0 1-2.18-2.18 2.18 2.18 0 0 1 2.18-2.18 2.18 2.18 0 0 1 2.18 2.18 2.18 2.18 0 0 1-2.18 2.18M6.72 5.07L4.96 1.87c-.08-.15-.03-.34.12-.43.15-.08.34-.03.43.12L7.29 4.8A10.32 10.32 0 0 1 12 3.69c1.5 0 2.91.33 4.17.9l1.78-3.24c.09-.15.28-.2.43-.12.15.09.2.28.12.43L16.74 4.7A10.56 10.56 0 0 1 22 14H2A10.56 10.56 0 0 1 6.72 5.07z"/></svg>
+        Android APK
+      </button>
+      <button class="pbtn pbtn-ios" onclick="openModal('ios')">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        iOS TestFlight
+      </button>
+    </div>
+
+    <p class="cta-note reveal">Access is manual — you'll get a personal reply within a day or two.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-logo" href="#">FairShare</a>
+  <p>Built with ☕ and Google Sheets. No servers were harmed.</p>
+</footer>
+
+<!-- REQUEST ACCESS MODAL — styled like app bottom sheet -->
+<div class="modal-backdrop" id="modal" onclick="handleOverlayClick(event)">
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Request Beta Access ✈️</div>
+    <p class="sheet-desc">Pick your platform, then tap the button. It'll open your mail app with a pre-filled email — no forms, no data collected.</p>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tab-android" onclick="switchTab('android')">🤖 Android</button>
+      <button class="modal-tab" id="tab-ios" onclick="switchTab('ios')">🍎 iOS</button>
+    </div>
+
+    <div class="info-box" id="info-box">
+      <strong>Android APK</strong>
+      You'll receive an APK file to sideload. You may need to allow "Install from unknown sources" in your Android settings once.
+    </div>
+
+    <button class="btn-primary" onclick="sendEmail()">✉️ Send Access Request</button>
+    <p class="modal-fine">Opens your mail app · No signup required · Direct email to the developer</p>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ── replace with your actual email
+  const CONTACT_EMAIL = 'developfairshare@gmail.com';
+
+  const platformData = {
+    android: {
+      info: '<strong>Android APK</strong>You\'ll receive an APK file to sideload. You may need to allow "Install from unknown sources" in your Android settings once.',
+      subject: '[FairShare] Android Beta Access Request',
+      body: 'Hi,\n\nI\'d like to beta test FairShare on Android.\n\nDevice model: \nAndroid version: \n\nThanks!'
+    },
+    ios: {
+      info: '<strong>iOS via TestFlight</strong>You\'ll be added to TestFlight. Make sure the TestFlight app is installed on your iPhone before the invite arrives.',
+      subject: '[FairShare] iOS Beta Access Request',
+      body: 'Hi,\n\nI\'d like to beta test FairShare on iOS via TestFlight.\n\nDevice model: \niOS version: \nApple ID email: \n\nThanks!'
+    }
+  };
+
+  let currentPlatform = 'android';
+
+  function openModal(platform = 'android') {
+    currentPlatform = platform;
+    updateTab(platform);
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  function switchTab(platform) {
+    currentPlatform = platform;
+    updateTab(platform);
+  }
+
+  function updateTab(platform) {
+    document.getElementById('tab-android').classList.toggle('active', platform === 'android');
+    document.getElementById('tab-ios').classList.toggle('active', platform === 'ios');
+    document.getElementById('info-box').innerHTML = platformData[platform].info;
+  }
+
+  function sendEmail() {
+    const d = platformData[currentPlatform];
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
