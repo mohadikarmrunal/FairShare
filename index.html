@@ -1111,24 +1111,9 @@
         <p>Your data never touches a FairShare server. Google Sheets is the only backend — and it's yours, always.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📶</div>
-        <h3>Offline-first</h3>
-        <p>Add expenses without internet. A sync queue holds changes locally and pushes them when you reconnect.</p>
-      </div>
-      <div class="feature-card">
         <div class="feature-icon">⚖️</div>
         <h3>Minimum transactions</h3>
         <p>Smart settlement algorithm that reduces the number of payments everyone has to make to zero out.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📱</div>
-        <h3>Native iOS & Android</h3>
-        <p>Built with Capacitor — a real native app, not a web wrapper. Proper safe areas, native auth, KeyStore.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">💱</div>
-        <h3>Multi-currency</h3>
-        <p>Travelling across borders? Log expenses in any currency per trip. USD, EUR, INR, JPY and more.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">🆓</div>
@@ -1175,12 +1160,12 @@
 <div class="modal-backdrop" id="modal" onclick="handleOverlayClick(event)">
   <div class="modal-sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">Request Beta Access ✈️</div>
-    <p class="sheet-desc">Pick your platform, then tap the button. It'll open your mail app with a pre-filled email — no forms, no data collected.</p>
+    <div class="sheet-title">Request Beta Access</div>
+    <p class="sheet-desc">Pick your platform and send the request. We'll manually add your Google account to grant you early access — no forms, no signups.</p>
 
     <div class="modal-tabs">
-      <button class="modal-tab active" id="tab-android" onclick="switchTab('android')">🤖 Android</button>
-      <button class="modal-tab" id="tab-ios" onclick="switchTab('ios')">🍎 iOS</button>
+      <button class="modal-tab active" id="tab-android" onclick="switchTab('android')"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;vertical-align:middle;margin-right:5px"><path d="M6.18 15.64a2.18 2.18 0 0 1-2.18-2.18C4 12.29 4.98 11.32 6.18 11.32a2.18 2.18 0 0 1 2.18 2.18c0 1.19-.97 2.14-2.18 2.14m11.64 0a2.18 2.18 0 0 1-2.18-2.18 2.18 2.18 0 0 1 2.18-2.18 2.18 2.18 0 0 1 2.18 2.18 2.18 2.18 0 0 1-2.18 2.18M6.72 5.07L4.96 1.87c-.08-.15-.03-.34.12-.43.15-.08.34-.03.43.12L7.29 4.8A10.32 10.32 0 0 1 12 3.69c1.5 0 2.91.33 4.17.9l1.78-3.24c.09-.15.28-.2.43-.12.15.09.2.28.12.43L16.74 4.7A10.56 10.56 0 0 1 22 14H2A10.56 10.56 0 0 1 6.72 5.07z"/></svg>Android</button>
+      <button class="modal-tab" id="tab-ios" onclick="switchTab('ios')"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;vertical-align:middle;margin-right:5px"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>iOS</button>
     </div>
 
     <div class="info-box" id="info-box">
@@ -1189,7 +1174,7 @@
     </div>
 
     <button class="btn-primary" onclick="sendEmail()">✉️ Send Access Request</button>
-    <p class="modal-fine">Opens your mail app · No signup required · Direct email to the developer</p>
+    <p class="modal-fine">Your Gmail account will be added by us to grant you early access to the app.</p>
   </div>
 </div>
 
