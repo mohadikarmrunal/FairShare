@@ -1186,7 +1186,7 @@
 
   const platformData = {
     android: {
-      info: '<strong>Android APK</strong> The APK will download automatically. You may need to allow "Install from unknown sources" in your Android settings once.',
+      info: '<strong>Android APK</strong> You\'ll receive the APK download link in our reply. You may need to allow "Install from unknown sources" in your Android settings once.',
       subject: '[FairShare] Android Beta Access Request',
       body: 'Hi,\n\nI\'d like to beta test FairShare on Android.\n\nThanks!'
     },
@@ -1222,7 +1222,7 @@
   }
 
   const modalDesc = {
-    android: 'Your APK will download shortly.',
+    android: 'You\'ll receive the APK link in our reply within two days.',
     ios: 'You will receive installation instructions from us within two days.'
   };
 
@@ -1236,12 +1236,7 @@
   function sendEmail() {
     if (!currentPlatform) return;
     const d = platformData[currentPlatform];
-    if (currentPlatform === 'android') {
-      window.open(APK_URL, '_blank');
-    }
-    setTimeout(() => {
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
-    }, 500);
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
   }
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
