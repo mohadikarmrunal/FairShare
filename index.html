@@ -652,12 +652,12 @@
     .pbtn-android:hover { box-shadow: 0 8px 32px rgba(200,245,100,0.3); }
 
     .pbtn-ios {
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--border);
+      background: var(--accent);
+      color: #0a0a0f;
+      box-shadow: 0 4px 20px rgba(200,245,100,0.2);
     }
 
-    .pbtn-ios:hover { background: var(--surface2); }
+    .pbtn-ios:hover { box-shadow: 0 8px 32px rgba(200,245,100,0.3); }
 
     .pbtn svg { width: 20px; height: 20px; }
 
@@ -850,15 +850,15 @@
 <!-- HERO -->
 <div class="hero">
   <div class="hero-left">
-    <p class="hero-eyebrow">No servers · No subscription · Your data</p>
+    <p class="hero-eyebrow">Your data. Your Drive. No middleman.</p>
     <h1>Split expenses,<br/><em>not friendships.</em></h1>
     <p class="hero-sub">
       FairShare tracks who paid what, splits everything fairly, and settles up with the fewest possible transfers — all stored in your own Google Sheet.
     </p>
     <div class="hero-actions">
-      <button class="btn-primary" onclick="openModal()">
+      <a class="btn-primary" href="#beta">
         🧪 Request Beta Access
-      </button>
+      </a>
       <a class="btn-secondary" href="#how">How it works ↓</a>
     </div>
   </div>
@@ -1102,7 +1102,7 @@
   <div class="section-wrap">
     <span class="section-label reveal">Why FairShare</span>
     <h2 class="section-title reveal">Built different.</h2>
-    <p class="section-sub reveal">Most apps own your data and charge you for it. FairShare doesn't.</p>
+    <p class="section-sub reveal" style="max-width:620px">Born out of frustration with being asked to pay a monthly subscription just to split a dinner bill. FairShare does the same thing, but keeps your data in your own Google Drive. No server, no company holding your receipts, no lock-in. Just you and a spreadsheet you actually own.</p>
 
     <div class="features-grid reveal">
       <div class="feature-card">
@@ -1127,12 +1127,12 @@
 <div class="divider"></div>
 
 <!-- CTA -->
-<section class="cta-section">
+<section class="cta-section" id="beta">
   <div class="section-wrap" style="text-align:center">
     <span class="section-label reveal" style="display:block">Beta Testing</span>
     <h2 class="section-title reveal">Want to try it early?</h2>
     <p class="section-sub reveal" style="margin:0 auto 40px;text-align:center">
-      FairShare is in private beta. Request access and you'll get a personal reply with install instructions within a day or two.
+      FairShare is still early — built and used on real trips. If that sounds like something you'd want to try, you're welcome to join the beta.
     </p>
 
     <div class="platform-btns reveal">
@@ -1153,7 +1153,7 @@
 <!-- FOOTER -->
 <footer>
   <a class="footer-logo" href="#">FairShare</a>
-  <p>Built with ☕ and Google Sheets. No servers were harmed.</p>
+  <p>Built with ✦ Claude and Google Sheets. No servers were harmed.</p>
 </footer>
 
 <!-- REQUEST ACCESS MODAL — styled like app bottom sheet -->
@@ -1161,7 +1161,7 @@
   <div class="modal-sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title">Request Beta Access</div>
-    <p class="sheet-desc">Pick your platform and send the request. We'll manually add your Google account to grant you early access — no forms, no signups.</p>
+    <p class="sheet-desc" id="modal-desc" style="min-height:2.8em"></p>
 
     <div class="modal-tabs">
       <button class="modal-tab" id="tab-android" onclick="switchTab('android')"><svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;vertical-align:middle;margin-right:5px"><path d="M6.18 15.64a2.18 2.18 0 0 1-2.18-2.18C4 12.29 4.98 11.32 6.18 11.32a2.18 2.18 0 0 1 2.18 2.18c0 1.19-.97 2.14-2.18 2.14m11.64 0a2.18 2.18 0 0 1-2.18-2.18 2.18 2.18 0 0 1 2.18-2.18 2.18 2.18 0 0 1 2.18 2.18 2.18 2.18 0 0 1-2.18 2.18M6.72 5.07L4.96 1.87c-.08-.15-.03-.34.12-.43.15-.08.34-.03.43.12L7.29 4.8A10.32 10.32 0 0 1 12 3.69c1.5 0 2.91.33 4.17.9l1.78-3.24c.09-.15.28-.2.43-.12.15.09.2.28.12.43L16.74 4.7A10.56 10.56 0 0 1 22 14H2A10.56 10.56 0 0 1 6.72 5.07z"/></svg>Android</button>
@@ -1173,8 +1173,8 @@
       You'll receive an APK file to sideload. You may need to allow "Install from unknown sources" in your Android settings once.
     </div>
 
-    <button class="btn-primary" onclick="sendEmail()">✉️ Send Access Request</button>
-    <p class="modal-fine">Your Gmail account will be added by us to grant you early access to the app.</p>
+    <button class="btn-primary" onclick="sendEmail()">✉️ Request Access via Gmail</button>
+    <p class="modal-fine">Your Gmail account will be added by us to grant you early access to the app within 2 days.</p>
   </div>
 </div>
 
@@ -1221,10 +1221,16 @@
     updateTab(platform);
   }
 
+  const modalDesc = {
+    android: 'Your APK will download shortly.',
+    ios: 'You will receive installation instructions from us within two days.'
+  };
+
   function updateTab(platform) {
     document.getElementById('tab-android').classList.toggle('active', platform === 'android');
     document.getElementById('tab-ios').classList.toggle('active', platform === 'ios');
     document.getElementById('info-box').innerHTML = platformData[platform].info;
+    document.getElementById('modal-desc').textContent = modalDesc[platform];
   }
 
   function sendEmail() {
