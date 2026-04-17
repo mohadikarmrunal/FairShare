@@ -1237,14 +1237,11 @@
     if (!currentPlatform) return;
     const d = platformData[currentPlatform];
     if (currentPlatform === 'android') {
-      const a = document.createElement('a');
-      a.href = APK_URL;
-      a.download = 'FairShare.apk';
-      a.click();
+      window.open(APK_URL, '_blank');
     }
     setTimeout(() => {
       window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(d.subject)}&body=${encodeURIComponent(d.body)}`;
-    }, 300);
+    }, 500);
   }
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
